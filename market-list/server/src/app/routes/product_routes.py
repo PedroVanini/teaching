@@ -8,6 +8,7 @@ from src.app.schemas import (
     ProdutoBuscaSchema,
     ProdutoDelSchema,
     ProdutoSchema,
+    ProdutoUpdateSchema,
     ProdutoViewSchema,
     apresenta_produto,
     apresenta_produtos,
@@ -17,6 +18,7 @@ from src.core.use_cases.add_product import AddProductUseCase
 from src.core.use_cases.delete_product import DeleteProductUseCase
 from src.core.use_cases.get_product import GetProductUseCase
 from src.core.use_cases.list_products import ListProductsUseCase
+from src.core.use_cases.update_product_price import UpdateProductPriceUseCase
 
 produto_tag = Tag(
     name="Produto",
@@ -30,6 +32,7 @@ def register_product_routes(
     list_use_case: ListProductsUseCase,
     get_use_case: GetProductUseCase,
     delete_use_case: DeleteProductUseCase,
+    update_price_use_case: UpdateProductPriceUseCase,
 ) -> None:
     @app.post(
         "/produto",
@@ -84,5 +87,19 @@ def register_product_routes(
         try:
             delete_use_case.execute(nome)
             return {"mesage": "Produto removido", "nome": nome}, 200
+        except ProductNotFound as error:
+            return {"mesage": str(error)}, 404
+
+    @app.put(
+        "/produto",
+        tags=[produto_tag],
+        responses={"200": ProdutoViewSchema, "404": ErrorSchema},
+    )
+    def update_produto(form: ProdutoUpdateSchema):
+        """Atualiza o preço de um produto pelo nome"""
+        nome = unquote(unquote(form.nome))
+        try:
+            produto = update_price_use_case.execute(nome, form.valor)
+            return apresenta_produto(produto), 200
         except ProductNotFound as error:
             return {"mesage": str(error)}, 404

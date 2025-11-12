@@ -107,6 +107,72 @@ const deleteItem = (item) => {
 
 /*
   --------------------------------------------------------------------------------------
+  Função para limpar apenas as linhas de dados da tabela (mantém o cabeçalho)
+  --------------------------------------------------------------------------------------
+*/
+const clearTableData = () => {
+  var table = document.getElementById('myTable');
+  // Remove todas as linhas exceto a primeira (cabeçalho)
+  while (table.rows.length > 1) {
+    table.deleteRow(1);
+  }
+}
+
+/*
+  --------------------------------------------------------------------------------------
+  Função para atualizar o preço de um produto via requisição PUT
+  --------------------------------------------------------------------------------------
+*/
+const updateProductPrice = async (productName, newPrice) => {
+  const formData = new FormData();
+  formData.append('nome', productName);
+  formData.append('valor', newPrice);
+
+  let url = 'http://127.0.0.1:5000/produto';
+  fetch(url, {
+    method: 'put',
+    body: formData
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      alert("Preço atualizado com sucesso!");
+      clearTableData();
+      getList();
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+      alert("Erro ao atualizar o preço!");
+    });
+}
+
+/*
+  --------------------------------------------------------------------------------------
+  Função para criar um botão de editar para cada item da lista
+  --------------------------------------------------------------------------------------
+*/
+const insertEditButton = (parent, productName, currentPrice) => {
+  let span = document.createElement("span");
+  let txt = document.createTextNode("\u270E");
+  span.className = "edit";
+  span.appendChild(txt);
+  
+  span.onclick = function () {
+    let newPrice = prompt(`Atualizar preço de "${productName}".\nPreço atual: R$ ${currentPrice}`, currentPrice);
+    
+    if (newPrice !== null && newPrice !== '') {
+      if (isNaN(newPrice)) {
+        alert("O preço precisa ser um número!");
+        return;
+      }
+      updateProductPrice(productName, parseFloat(newPrice));
+    }
+  };
+  
+  parent.appendChild(span);
+}
+
+/*
+  --------------------------------------------------------------------------------------
   Função para adicionar um novo item com nome, quantidade e valor 
   --------------------------------------------------------------------------------------
 */
@@ -140,6 +206,7 @@ const insertList = (nameProduct, quantity, price) => {
     var cel = row.insertCell(i);
     cel.textContent = item[i];
   }
+  insertEditButton(row.insertCell(-1), nameProduct, price)
   insertButton(row.insertCell(-1))
   document.getElementById("newInput").value = "";
   document.getElementById("newQuantity").value = "";

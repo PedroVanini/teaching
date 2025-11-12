@@ -13,6 +13,13 @@ class ProdutoSchema(BaseModel):
     valor: float
 
 
+class ProdutoUpdateSchema(BaseModel):
+    """Estrutura para atualização de preço do produto."""
+
+    nome: str
+    valor: float
+
+
 class ProdutoBuscaSchema(BaseModel):
     """Estrutura de busca por produto usando o identificador."""
 

@@ -86,6 +86,26 @@ class SqlAlchemyProductRepository(ProductRepository):
         finally:
             session.close()
 
+    def update_price(self, name: str, new_price: float) -> Optional[Product]:
+        session = self._session_factory()
+        try:
+            model = (
+                session.query(ProductModel)
+                .filter(ProductModel.nome == name)
+                .first()
+            )
+            if model:
+                model.valor = new_price
+                session.commit()
+                session.refresh(model)
+                return product_mapper.to_domain(model)
+            return None
+        except Exception:
+            session.rollback()
+            raise
+        finally:
+            session.close()
+
     def add_comment(self, product_id: int, comment: Comment) -> Product:
         session = self._session_factory()
         try:

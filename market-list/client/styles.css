@@ -102,6 +102,18 @@ header {
     font-weight: bolder;
 }
 
+.edit {
+    cursor: pointer;
+    padding: 12px 8px 12px 10px;
+    font-size: 18px;
+    transition: 0.2s;
+}
+
+.edit:hover {
+    color: #4CAF50;
+    font-weight: bolder;
+}
+
 table,
 th,
 td {

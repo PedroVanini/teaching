@@ -31,5 +31,9 @@ class ProductRepository(ABC):
         """Delete a product by name. Returns True if a row was removed."""
 
     @abstractmethod
+    def update_price(self, name: str, new_price: float) -> Optional[Product]:
+        """Update product price by name. Returns updated product if found."""
+
+    @abstractmethod
     def add_comment(self, product_id: int, comment: Comment) -> Product:
         """Attach a comment to a product and return the updated product."""
